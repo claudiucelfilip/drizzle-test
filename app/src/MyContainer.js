@@ -1,5 +1,4 @@
 import MyComponent from "./MyComponent";
-import { drizzleConnect } from "@drizzle/react-plugin";
 import { connect } from "react-redux";
 
 const set = counter => {

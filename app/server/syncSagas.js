@@ -5,7 +5,9 @@ const wss = new WebSocket.Server({ port: 8080 });
 let websocket;
 wss.on("connection", function connection(ws) {
   websocket = ws;
+  websocket.on("error", () => {});
 });
+
 
 // fetch data from service using sagas
 function* syncState() {
@@ -24,9 +26,7 @@ function* syncState() {
 }
 
 function* testSaga() {
-  
   yield takeEvery("CONTRACT_SYNCED", syncState);
-  // yield takeEvery("TEST", test);
 }
 
 export default testSaga;

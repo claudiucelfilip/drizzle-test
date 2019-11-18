@@ -1,14 +1,10 @@
 import React, { useCallback, useEffect } from "react";
-import {
-  AccountData,
-  ContractData,
-  ContractForm
-} from "@drizzle/react-components";
+
 import axios from "axios";
 import logo from "./logo.png";
 
 let counter = 200;
-export default ({ counter = 0, set, todos = [], fetchTodos }) => {
+export default ({ counter = 0, set, fetch, todos = [], fetchTodos }) => {
   const count = useCallback(async () => {
     set(counter + 1);
   }, [counter]);
@@ -21,8 +17,8 @@ export default ({ counter = 0, set, todos = [], fetchTodos }) => {
         <p>
           Examples of how to get started with Drizzle in various situations.
         </p>
-        {/* <button onClick={test}>Todo</button> */}
         <button onClick={fetchTodos}>Fetch Todos</button>
+        <button onClick={fetch}>Fetch</button>
         <button onClick={count}>Count</button>
         {todos.map(todo => (
           <p key={todo.id}>{todo.title}</p>

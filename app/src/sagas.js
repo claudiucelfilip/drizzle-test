@@ -17,6 +17,7 @@ function sync() {
     // The subscriber must return an unsubscribe function
     return () => {
       ws.close();
+      emit(END);
     };
   });
 }
