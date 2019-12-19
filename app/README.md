@@ -1,68 +1,62 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a PoC which aims to demonstrate the viability of using drizzle development of dapp on Ethereum.
 
-## Available Scripts
 
-In the project directory, you can run:
+### TL;DR
+As a summary, there's a node server which uses drizzle to interact with a smart contract. 
+In turn, a client app is setup to interact with both the node server and an external API.
 
-### `yarn start`
+The idea is that drizzle can be used to manage a limited, smart contract state on a server and redux+saga for everything else on the frontend. 
+Alternatively, the smart contract state can be manage on the frontend with the same drizzle library and the external state manangement can be added to drizzle.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## Other blockchains with drizzle (ie Wavelet)
+For now, to avoid unnecesarry bugs, Wavelet integration is not included in this project.
+A local Ethereum network is used (via Ganache) with minimal changes to drizzle https://github.com/claudiucelfilip/drizzle/tree/feature/node-support.
 
-### `yarn test`
+Please consult https://github.com/claudiucelfilip/drizzle/tree/feature/wavelet-integration for Wavelet integration.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Drizzle on the server side
 
-### `yarn build`
+app/server/index.js opens two servers:
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 1. Express on port 9000
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+This server exposes 2 POST enpoints:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `/fetch`
+   - calls a drizzle wrapper method `cacheCall` which is wrapper over web3.js function `call`. In our case, there's a `storedData` variable (getter) on the smart contract and we call it to get the latest counter value.
+   - triggers `CONTRACT_SYNCED` which then sends the updated state via WebSocket. Could have just returned the state here but opted to use a single channel for state sync (via websocket)
+- `/set`
+   - calls a drizzle wrapper method `cacheSend` hich is wrapper over web3.js function `send`. In our case, this will update the `storedData` with the latest counter value.
 
-### `yarn eject`
+Normally, a general purpose dispatch endpoint can be used and smart contract calls can abstracted and mapped to each action.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### WebSocket on port 8080
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The WebSocket server listens to any `CONTRACT_SYNCED` actions, is dispatched by drizzle and sends all the contract state to the client.
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## 3. Client state outside drizzle
+In order to interact with the servers app/src/sagas.js is used. It listens to 3 actions and creates a eventChannel:
+- `fetch`  maps to POST `/fetch`
+- `set`  maps to POST `/set`
+- `todos_fetch` calls external [jsonplaceholder API](https://jsonplaceholder.typicode.com/todos) and dispatches an action to update the todos
+- `eventChannel` to listen for state updates from WebSocket and dispatches an action to replace the whole state.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Should we use drizzle on the client, extra actions/reducers/states cand be added along sided the other smart contract functionality.
 
-## Learn More
+# Usage
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Run Truffle + Ganache
+In root folder run `truffle develop`
+From the consle run `compile` and then `deploy`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. [New Terminal] Install Node dependencies 
+`cd app && yarn`
+  
+   - Notice: a custom, packed version of @drizzle/store is used from the [node-support](https://github.com/claudiucelfilip/drizzle/tree/feature/node-support) branch
 
-### Code Splitting
+1. Run Node server
+`yarn server`
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+5. [New Terminal] Run client
+`cd app && yarn start`

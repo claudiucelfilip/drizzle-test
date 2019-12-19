@@ -3,10 +3,9 @@ import React, { useCallback, useEffect } from "react";
 import axios from "axios";
 import logo from "./logo.png";
 
-let counter = 200;
 export default ({ counter = 0, set, fetch, todos = [], fetchTodos }) => {
   const count = useCallback(async () => {
-    set(counter + 1);
+    set(counter++);
   }, [counter]);
 
   return (

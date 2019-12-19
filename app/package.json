@@ -5,9 +5,10 @@
   "dependencies": {
     "@babel/core": "^7.7.2",
     "@babel/node": "^7.7.0",
+    "@babel/preset-env": "^7.7.7",
     "@drizzle/react-components": "^1.5.1",
     "@drizzle/react-plugin": "^1.5.1",
-    "@drizzle/store": "^1.5.1",
+    "@drizzle/store": "./drizzle-store-1.5.1.tgz",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
