@@ -1,6 +1,4 @@
-This is a PoC which aims to demonstrate the viability of using drizzle development of dapp on Ethereum.
-
-It was build on top of https://github.com/truffle-box/drizzle-box and it only uses the SimpleStorage.sol smart contract.
+This project was build on top of https://github.com/truffle-box/drizzle-box and it only uses the SimpleStorage.sol smart contract.
 
 
 ### TL;DR
