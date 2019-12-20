@@ -26,7 +26,7 @@ function* syncState() {
 }
 
 function* testSaga() {
-  yield takeEvery("CONTRACT_SYNCED", syncState);
+  yield takeLatest("CONTRACT_SYNCED", syncState);
 }
 
 export default testSaga;

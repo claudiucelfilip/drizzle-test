@@ -4,8 +4,8 @@ import axios from "axios";
 import logo from "./logo.png";
 
 export default ({ counter = 0, set, fetch, todos = [], fetchTodos }) => {
-  const count = useCallback(async () => {
-    set(counter++);
+  const increaseCounter = useCallback(async () => {
+    set(++counter);
   }, [counter]);
 
   return (
@@ -17,8 +17,7 @@ export default ({ counter = 0, set, fetch, todos = [], fetchTodos }) => {
           Examples of how to get started with Drizzle in various situations.
         </p>
         <button onClick={fetchTodos}>Fetch Todos</button>
-        <button onClick={fetch}>Fetch</button>
-        <button onClick={count}>Count</button>
+        <button onClick={increaseCounter}>Increase Counter</button>
         {todos.map(todo => (
           <p key={todo.id}>{todo.title}</p>
         ))}
